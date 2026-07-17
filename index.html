@@ -605,7 +605,8 @@
         if(!data[item.sign]) data[item.sign] = {};
         data[item.sign][item.day] = item;
       });
-      horoscopeData = data;
+            horoscopeData = data;
+      if (currentSign) renderDetail(); // re-render if a sign was opened while loading
     } catch(err){
       console.error("Failed to load horoscopes:", err);
       horoscopeData = null;
