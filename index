@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dark Folio Press · 3 Day Horoscopes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0b1526;
+    --ink-deep: #060c17;
+    --parchment: #f3ead6;
+    --parchment-dim: #e7dcc0;
+    --gold: #c9a24b;
+    --gold-bright: #e8d5a3;
+    --teal: #6fada6;
+    --violet: #4a3564;
+    --line: rgba(201,162,75,0.35);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0; min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(74,53,100,0.35), transparent 55%),
+      radial-gradient(ellipse at 90% 110%, rgba(111,173,166,0.12), transparent 50%),
+      var(--ink);
+    color: var(--parchment);
+    font-family: 'EB Garamond', Georgia, serif;
+  }
+
+  .stars{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(232,213,163,0.6), transparent),
+      radial-gradient(1px 1px at 80% 15%, rgba(232,213,163,0.5), transparent),
+      radial-gradient(1px 1px at 45% 60%, rgba(232,213,163,0.4), transparent),
+      radial-gradient(1px 1px at 65% 80%, rgba(232,213,163,0.55), transparent),
+      radial-gradient(1px 1px at 25% 85%, rgba(232,213,163,0.35), transparent),
+      radial-gradient(1px 1px at 92% 55%, rgba(232,213,163,0.45), transparent);
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity:0.8;
+  }
+
+  .wrap{
+    position:relative; z-index:1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header.page-head{
+    text-align:center;
+    margin-bottom: 44px;
+  }
+
+  .eyebrow{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    font-size:12px;
+    color: var(--teal);
+    margin:0 0 10px;
+  }
+
+  h1{
+    font-family:'Cinzel Decorative', 'EB Garamond', serif;
+    font-weight:700;
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--gold-bright);
+    margin: 0 0 14px;
+    letter-spacing: 1px;
+  }
+
+  .rule{
+    width: 140px; height:1px; margin: 0 auto;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .subhead{
+    font-size:15px; color: var(--parchment-dim); opacity:0.75;
+    margin: 0 0 32px;
+    font-style:italic;
+    text-align:center;
+  }
+
+  .atmospheric-panel{
+    max-width: 620px;
+    margin: 0 auto 44px;
+    text-align: center;
+  }
+  .atmo-title{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin: 0 0 16px;
+  }
+  .atmo-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 20px 4px;
+  }
+  @media (max-width: 560px){
+    .atmo-grid{ grid-template-columns: repeat(3, 1fr); gap: 16px 10px; }
+  }
+  @media (max-width: 360px){
+    .atmo-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  .atmo-item{
+    text-align: center;
+  }
+  .atmo-icon{
+    font-size: 24px;
+    display:block;
+    margin-bottom: 6px;
+  }
+  .atmo-label{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display:block;
+    margin-bottom: 3px;
+  }
+  .atmo-value{
+    font-size: 13.5px;
+    color: var(--parchment);
+    font-style: italic;
+  }
+
+  /* ---- GRID VIEW ---- */
+  #grid-view.hidden, #detail-view.hidden{ display:none; }
+
+  .zodiac-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 8px;
+  }
+  @media (max-width: 620px){
+    .zodiac-grid{ grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 420px){
+    .zodiac-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .sign-tile{
+    background: linear-gradient(180deg, rgba(201,162,75,0.06), rgba(201,162,75,0.02));
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 10px 16px;
+    text-align:center;
+    cursor:pointer;
+    position:relative;
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+  .sign-tile:hover, .sign-tile:focus-visible{
+    transform: translateY(-3px);
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(201,162,75,0.14), rgba(201,162,75,0.03));
+    outline: none;
+  }
+  .sign-tile:focus-visible{
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+  .sign-glyph{
+    font-size: 30px;
+    color: var(--gold-bright);
+    display:block;
+    margin-bottom: 8px;
+    line-height:1;
+  }
+  .sign-name{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--parchment);
+  }
+  .sign-dates{
+    display:block;
+    font-size: 10.5px;
+    color: var(--teal);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ---- DETAIL VIEW ---- */
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color: var(--teal);
+    text-decoration:none;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:'EB Garamond', serif;
+    padding:0;
+  }
+  .back-link:hover{ color: var(--gold-bright); }
+
+  .reading-card{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(243,234,214,0.05), rgba(243,234,214,0.02)),
+      var(--ink-deep);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 40px clamp(20px, 5vw, 56px) 44px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 30px 60px -30px rgba(0,0,0,0.7);
+  }
+  .reading-card::before{
+    content:"";
+    position:absolute; inset:8px;
+    border: 1px solid rgba(201,162,75,0.18);
+    pointer-events:none;
+  }
+
+  .reading-head{
+    text-align:center;
+    margin-bottom: 8px;
+  }
+  .reading-glyph{
+    font-size: 44px;
+    color: var(--gold-bright);
+    display:block;
+  }
+  .reading-sign{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin: 8px 0 4px;
+  }
+  .reading-date{
+    font-size: 13px;
+    color: var(--teal);
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+
+  .day-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 22px;
+    margin: 22px 0 30px;
+  }
+  .day-arrow{
+    background:none;
+    border: 1px solid var(--line);
+    color: var(--gold-bright);
+    width: 38px; height:38px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: all 0.2s ease;
+  }
+  .day-arrow:hover:not(:disabled){
+    border-color: var(--gold);
+    background: rgba(201,162,75,0.1);
+  }
+  .day-arrow:disabled{
+    opacity: 0.25;
+    cursor: default;
+  }
+  .day-label{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+    min-width: 90px;
+    text-align:center;
+  }
+
+  .rule-small{
+    width: 80px; height:1px; margin: 0 auto 26px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .reading-body{
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--parchment);
+    white-space: pre-line;
+  }
+
+  .reading-body p{ margin: 0 0 18px; }
+
+  .status-msg{
+    text-align:center;
+    color: var(--teal);
+    font-style: italic;
+    padding: 60px 0;
+  }
+  .status-msg.error{ color: #d98f7c; }
+
+  .grid-foot{
+    text-align:center;
+    margin-top: 38px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .brand-link{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .brand-link:hover{
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .cta-text{
+    margin: 14px 0 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--parchment-dim);
+  }
+  .cta-text a{
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(111,173,166,0.4);
+    font-style: normal;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .cta-text a:hover{
+    color: var(--gold-bright);
+    border-color: var(--gold-bright);
+  }
+
+  footer.page-foot{
+    text-align:center;
+    margin-top: 56px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(232,213,163,0.4);
+    text-transform: uppercase;
+  }
+  footer.page-foot a{
+    color: rgba(232,213,163,0.6);
+    text-decoration: none;
+  }
+  footer.page-foot a:hover{
+    color: var(--gold-bright);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .sign-tile{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="eyebrow">Dark Folio Press</p>
+    <h1>3 Day Horoscopes</h1>
+    <div class="rule"></div>
+  </header>
+
+  <!-- ATMOSPHERIC READING / CORRESPONDENCES -->
+  <section id="atmospheric-panel" class="atmospheric-panel">
+    <p class="atmo-title">Today's Planetary Correspondences &amp; Correspondences</p>
+    <div class="atmo-grid" id="atmo-grid">
+      <p class="status-msg">Loading today's correspondences…</p>
+    </div>
+  </section>
+
+  <p class="subhead">Choose your sign to read yesterday, today, or tomorrow's forecast.</p>
+
+  <!-- GRID VIEW -->
+  <section id="grid-view">
+    <div class="zodiac-grid" id="zodiac-grid"></div>
+
+    <div class="grid-foot">
+      <p class="cta-text">Need 3 Day Horoscopes for your site and brand? <a href="https://www.darkfoliopress.com/contact-8" target="_blank" rel="noopener">Let's talk!</a></p>
+    </div>
+  </section>
+
+  <!-- DETAIL VIEW -->
+  <section id="detail-view" class="hidden">
+    <button class="back-link" id="back-btn">← Back to all signs</button>
+
+    <div class="reading-card">
+      <div class="reading-head">
+        <span class="reading-glyph" id="detail-glyph"></span>
+        <div class="reading-sign" id="detail-sign"></div>
+        <div class="reading-date" id="detail-date"></div>
+      </div>
+
+      <div class="day-nav">
+        <button class="day-arrow" id="prev-btn" aria-label="Previous day">←</button>
+        <span class="day-label" id="day-label">Today</span>
+        <button class="day-arrow" id="next-btn" aria-label="Next day">→</button>
+      </div>
+
+      <div class="rule-small"></div>
+
+      <div class="reading-body" id="reading-body">
+        <p class="status-msg">Loading today's reading…</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-foot"><a href="https://www.darkfoliopress.com" target="_blank" rel="noopener">Dark Folio Press</a> &middot; oracle.darkfoliopress.com</footer>
+</div>
+
+<script>
+  const API_URL = "https://horoscopes.darkfoliopress.com/api/public/horoscopes/3day";
+
+  const SIGNS = [
+    { key: "aries",       name: "Aries",       glyph: "♈", dates: "Mar 21 – Apr 19" },
+    { key: "taurus",      name: "Taurus",      glyph: "♉", dates: "Apr 20 – May 20" },
+    { key: "gemini",      name: "Gemini",      glyph: "♊", dates: "May 21 – Jun 20" },
+    { key: "cancer",      name: "Cancer",      glyph: "♋", dates: "Jun 21 – Jul 22" },
+    { key: "leo",         name: "Leo",         glyph: "♌", dates: "Jul 23 – Aug 22" },
+    { key: "virgo",       name: "Virgo",       glyph: "♍", dates: "Aug 23 – Sep 22" },
+    { key: "libra",       name: "Libra",       glyph: "♎", dates: "Sep 23 – Oct 22" },
+    { key: "scorpio",     name: "Scorpio",     glyph: "♏", dates: "Oct 23 – Nov 21" },
+    { key: "sagittarius", name: "Sagittarius", glyph: "♐", dates: "Nov 22 – Dec 21" },
+    { key: "capricorn",   name: "Capricorn",   glyph: "♑", dates: "Dec 22 – Jan 19" },
+    { key: "aquarius",    name: "Aquarius",    glyph: "♒", dates: "Jan 20 – Feb 18" },
+    { key: "pisces",      name: "Pisces",      glyph: "♓", dates: "Feb 19 – Mar 20" },
+  ];
+
+  const DAY_ORDER = ["yesterday", "today", "tomorrow"];
+  const DAY_LABELS = { yesterday: "Yesterday", today: "Today", tomorrow: "Tomorrow" };
+
+  let horoscopeData = null; // { sign: { yesterday: {...}, today: {...}, tomorrow: {...} } }
+  let currentSign = null;
+  let currentDayIndex = 1; // start on "today"
+
+  const gridEl = document.getElementById("zodiac-grid");
+  const gridView = document.getElementById("grid-view");
+  const detailView = document.getElementById("detail-view");
+  const backBtn = document.getElementById("back-btn");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const dayLabelEl = document.getElementById("day-label");
+  const bodyEl = document.getElementById("reading-body");
+  const glyphEl = document.getElementById("detail-glyph");
+  const signEl = document.getElementById("detail-sign");
+  const dateEl = document.getElementById("detail-date");
+
+  function renderGrid(){
+    gridEl.innerHTML = "";
+    SIGNS.forEach(sign => {
+      const tile = document.createElement("button");
+      tile.className = "sign-tile";
+      tile.setAttribute("type", "button");
+      tile.innerHTML = `
+        <span class="sign-glyph">${sign.glyph}</span>
+        <span class="sign-name">${sign.name}</span>
+        <span class="sign-dates">${sign.dates}</span>
+      `;
+      tile.addEventListener("click", () => openSign(sign.key));
+      gridEl.appendChild(tile);
+    });
+  }
+
+  function openSign(signKey){
+    currentSign = signKey;
+    currentDayIndex = 1; // default to today
+    gridView.classList.add("hidden");
+    detailView.classList.remove("hidden");
+    renderDetail();
+    detailView.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function closeDetail(){
+    detailView.classList.add("hidden");
+    gridView.classList.remove("hidden");
+  }
+
+  function formatDate(dateStr){
+    if(!dateStr) return "";
+    const d = new Date(dateStr + "T00:00:00Z");
+    return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  }
+
+  function renderDetail(){
+    const signMeta = SIGNS.find(s => s.key === currentSign);
+    const dayKey = DAY_ORDER[currentDayIndex];
+    const entry = horoscopeData?.[currentSign]?.[dayKey];
+
+    glyphEl.textContent = signMeta.glyph;
+    signEl.textContent = signMeta.name;
+    dayLabelEl.textContent = DAY_LABELS[dayKey];
+
+    prevBtn.disabled = currentDayIndex <= 0;
+    nextBtn.disabled = currentDayIndex >= DAY_ORDER.length - 1;
+
+    if(!entry){
+      dateEl.textContent = "";
+      bodyEl.innerHTML = `<p class="status-msg error">No reading available for this day.</p>`;
+      return;
+    }
+
+    dateEl.textContent = formatDate(entry.date);
+    const paragraphs = entry.content.split(/\n\s*\n/).map(p => `<p>${p.trim()}</p>`).join("");
+    bodyEl.innerHTML = paragraphs;
+  }
+
+  backBtn.addEventListener("click", closeDetail);
+
+  prevBtn.addEventListener("click", () => {
+    if(currentDayIndex > 0){
+      currentDayIndex--;
+      renderDetail();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if(currentDayIndex < DAY_ORDER.length - 1){
+      currentDayIndex++;
+      renderDetail();
+    }
+  });
+
+  const ORACLE_TODAY_URL = "https://horoscopes.darkfoliopress.com/api/public/oracle/today";
+  const atmoGrid = document.getElementById("atmo-grid");
+
+  // Confirmed response shape:
+  // { date, moonPhase:{emoji,name}, tarot:{emoji,name}, gem:{emoji,name}, herb:{emoji,name}, atmosphericReading }
+  function extractItem(data, key){
+    const node = data?.[key];
+    if(!node) return null;
+    return { icon: node.emoji, label: node.name };
+  }
+
+  async function loadAtmospheric(){
+    try{
+      const res = await fetch(ORACLE_TODAY_URL);
+      if(!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const data = await res.json();
+
+      const moon    = extractItem(data, "moonPhase");
+      const card    = extractItem(data, "tarot");
+      const gemstone= extractItem(data, "gem");
+      const herb    = extractItem(data, "herb");
+      const rune    = extractItem(data, "rune");
+
+      const items = [
+        { label: "Moon",  entry: moon },
+        { label: "Card",  entry: card },
+        { label: "Gem",   entry: gemstone },
+        { label: "Herb",  entry: herb },
+        { label: "Rune",  entry: rune },
+      ].filter(i => i.entry);
+
+      if(items.length === 0){
+        atmoGrid.innerHTML = `<p class="status-msg error">Couldn't load today's correspondences.</p>`;
+        return;
+      }
+
+      atmoGrid.innerHTML = items.map(i => `
+        <div class="atmo-item">
+          <span class="atmo-icon">${i.entry.icon}</span>
+          <span class="atmo-label">${i.label}</span>
+          <span class="atmo-value">${i.entry.label}</span>
+        </div>
+      `).join("");
+    } catch(err){
+      console.error("Failed to load atmospheric reading:", err);
+      atmoGrid.innerHTML = `<p class="status-msg error">Couldn't load today's correspondences.</p>`;
+    }
+  }
+
+  loadAtmospheric();
+
+  async function loadHoroscopes(){
+    renderGrid();
+    try{
+      const res = await fetch(API_URL);
+      if(!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const json = await res.json();
+
+      const data = {};
+      json.horoscopes.forEach(item => {
+        if(!data[item.sign]) data[item.sign] = {};
+        data[item.sign][item.day] = item;
+      });
+      horoscopeData = data;
+    } catch(err){
+      console.error("Failed to load horoscopes:", err);
+      horoscopeData = null;
+      bodyEl.innerHTML = `<p class="status-msg error">Couldn't load today's readings. Please try again shortly.</p>`;
+    }
+  }
+
+  loadHoroscopes();
+</script>
+
+</body>
+</html>
