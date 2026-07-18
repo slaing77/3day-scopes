@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Observatory · Dark Folio Press</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0b1526;
+    --parchment: #f3ead6;
+    --parchment-dim: #e7dcc0;
+    --gold: #c9a24b;
+    --gold-bright: #e8d5a3;
+    --teal: #6fada6;
+    --line: rgba(201,162,75,0.35);
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'EB Garamond', Georgia, serif;
+  }
+  .widget{
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 20px 18px 16px;
+    background:
+      radial-gradient(ellipse at 20% -20%, rgba(74,53,100,0.35), transparent 60%),
+      var(--ink);
+  }
+  .widget-head{
+    text-align:center;
+    margin-bottom: 14px;
+  }
+  .widget-icon{ font-size: 22px; display:block; margin-bottom: 4px; }
+  .widget-title{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin: 0;
+  }
+  .widget-rule{
+    width: 70px; height:1px; margin: 8px auto 0;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .field-list{
+    border-top: 1px solid var(--line);
+  }
+  .field-row{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .field-label{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    font-size: 10.5px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    white-space: nowrap;
+  }
+  .field-value{
+    font-size: 14px;
+    color: var(--parchment);
+    font-style: italic;
+    text-align: right;
+  }
+  .status-msg{
+    text-align:center;
+    color: var(--teal);
+    font-style: italic;
+    font-size: 13px;
+    padding: 20px 0;
+  }
+  .status-msg.error{ color: #d98f7c; }
+  .dfp-badge{
+    display:block;
+    text-align:center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(232,213,163,0.55);
+    text-decoration: none;
+  }
+  .dfp-badge:hover{ color: var(--gold-bright); }
+  .dfp-badge b{
+    font-family:'Cinzel Decorative','EB Garamond',serif;
+    color: var(--gold-bright);
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="widget-head">
+    <span class="widget-icon">🌙</span>
+    <p class="widget-title">Today's Observatory</p>
+    <div class="widget-rule"></div>
+  </div>
+
+  <div class="field-list" id="field-list">
+    <p class="status-msg">Reading the sky…</p>
+  </div>
+
+  <a class="dfp-badge" href="https://slaing77.github.io/3day-scopes/" target="_blank" rel="noopener">
+    <b>🔮 Dark Folio Press</b><br/>See your full 3-Day Horoscope →
+  </a>
+</div>
+
+<script>
+  const API_URL = "https://horoscopes.darkfoliopress.com/api/wix/observatory";
+  const listEl = document.getElementById("field-list");
+
+  async function loadObservatory(){
+    try{
+      const res = await fetch(API_URL);
+      if(!res.ok) throw new Error(`${res.status}`);
+      const d = await res.json();
+
+      const fields = [
+        { label: "Moon",        value: d.moon       ? `${d.moon.emoji} ${d.moon.name}` : null },
+        { label: "Element",     value: d.element     ? `${d.element.emoji} ${d.element.name}` : null },
+        { label: "Planet",      value: d.planet      ? `${d.planet.name} in ${d.planet.sign}` : null },
+        { label: "Atmosphere",  value: d.atmosphere  || null },
+        { label: "Retrograde",  value: d.retrograde  || null },
+        { label: "Favourable",  value: d.favourable  ? d.favourable.join(", ") : null },
+        { label: "Tarot",       value: d.correspondence?.tarot || null },
+        { label: "Gem",         value: d.correspondence?.gem   || null },
+        { label: "Herb",        value: d.correspondence?.herb  || null },
+        { label: "Rune",        value: d.correspondence?.rune  || null },
+      ].filter(f => f.value);
+
+      listEl.innerHTML = fields.map(f => `
+        <div class="field-row">
+          <span class="field-label">${f.label}</span>
+          <span class="field-value">${f.value}</span>
+        </div>
+      `).join("");
+    } catch(err){
+      console.error("Observatory error:", err);
+      listEl.innerHTML = `<p class="status-msg error">Couldn't load today's observatory data.</p>`;
+    }
+  }
+
+  loadObservatory();
+</script>
+</body>
+</html>
