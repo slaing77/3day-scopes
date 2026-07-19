@@ -53,34 +53,6 @@ Shows: Herb · Crystal · Rune · Colour · Symbol · (optional short meaning)
 </iframe>
 ```
 
----
-
-## Setup checklist (for you, before offering these)
-
-1. **Add these files to your `3day-scopes` repo** in a new `/widgets/` folder:
-   - `widgets/observatory.html`
-   - `widgets/moon.html`
-   - `widgets/correspondences.html`
-2. **Commit + push.** GitHub Pages will serve them automatically at:
-   - `https://slaing77.github.io/3day-scopes/widgets/observatory.html`
-   - `https://slaing77.github.io/3day-scopes/widgets/moon.html`
-   - `https://slaing77.github.io/3day-scopes/widgets/correspondences.html`
-3. **CORS check** — these fetch from `horoscopes.darkfoliopress.com`, and since
-   the widgets can now be embedded on *any* third-party domain (not just your
-   own), your API needs `Access-Control-Allow-Origin: *` (or an open policy)
-   rather than a single allowed domain — otherwise other people's sites won't
-   be able to load the data.
-4. **Endpoint paths (confirmed):**
-   - `GET https://horoscopes.darkfoliopress.com/api/wix/observatory`
-   - `GET https://horoscopes.darkfoliopress.com/api/wix/moon`
-   - `GET https://horoscopes.darkfoliopress.com/api/public/oracle/today` (used for the Correspondence widget — herb/gem/rune)
-
-   The Observatory and Moon endpoints' exact JSON field names weren't
-   confirmed yet, so those two widgets' JS tries several likely key
-   spellings and logs the raw response to the browser console. Open each
-   widget page, check the console, and if any fields are blank, send me the
-   raw JSON and I'll lock in the exact field names in one pass.
-
 ## Sizing notes
 Each widget is designed for a **360px-wide sidebar-style placement**. On Wix,
 set the embed element's width to match (or leave "responsive" on if Wix
