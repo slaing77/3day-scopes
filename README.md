@@ -12,9 +12,9 @@ Shows: Moon · Element · Atmosphere · Favourable Activities · Correspondence
 
 ```html
 <iframe
-  src="https://slaing77.github.io/3day-scopes/widgets/observatory.html"
+ src="https://dark-folio-press.github.io/3day-scopes/Observatory.html"
   width="360"
-  height="420"
+  height="600"
   style="border:none; max-width:100%;"
   loading="lazy"
   title="Dark Folio Press Observatory">
@@ -28,7 +28,7 @@ Shows: Moon Phase · Zodiac Sign · Illumination · Lunar Age
 
 ```html
 <iframe
-  src="https://slaing77.github.io/3day-scopes/widgets/moon.html"
+  src="https://dark-folio-press.github.io/3day-scopes/moon.html"
   width="360"
   height="340"
   style="border:none; max-width:100%;"
@@ -44,7 +44,7 @@ Shows: Herb · Crystal · Rune · Colour · Symbol · (optional short meaning)
 
 ```html
 <iframe
-  src="https://slaing77.github.io/3day-scopes/widgets/correspondences.html"
+  src="https://dark-folio-press.github.io/3day-scopes/correspondences.html"
   width="360"
   height="380"
   style="border:none; max-width:100%;"
